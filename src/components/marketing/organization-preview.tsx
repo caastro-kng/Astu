@@ -40,6 +40,9 @@ export function OrganizationPreview() {
               <article
                 className={`mk-organizer-card ${item.tone}`}
                 data-organizer-card
+                data-scene-card={
+                  item.label === "Receitas" ? "income" : "expense"
+                }
                 key={item.label}
               >
                 <small>{item.label}</small>
@@ -55,7 +58,11 @@ export function OrganizationPreview() {
               />
               <span>Agora cada número tem seu lugar.</span>
             </div>
-            <article className="mk-organizer-card compact" data-organizer-card>
+            <article
+              className="mk-organizer-card compact"
+              data-organizer-card
+              data-scene-card="bill"
+            >
               <ReceiptText size={18} />
               <span>
                 <small>Próxima conta</small>
@@ -63,7 +70,11 @@ export function OrganizationPreview() {
               </span>
               <strong>{formatCurrency(demo.subscriptions[0].amount)}</strong>
             </article>
-            <article className="mk-organizer-card compact" data-organizer-card>
+            <article
+              className="mk-organizer-card compact"
+              data-organizer-card
+              data-scene-card="balance"
+            >
               <Wallet size={18} />
               <span>
                 <small>Saldo disponível</small>
@@ -71,13 +82,18 @@ export function OrganizationPreview() {
               </span>
               <strong>{formatCurrency(demoBalance)}</strong>
             </article>
-            <article className="mk-organizer-goal" data-organizer-card>
+            <article
+              className="mk-organizer-goal"
+              data-organizer-card
+              data-scene-card="goal"
+            >
               <span>
                 <small>Meta em andamento</small>
                 <b>{demo.goal.name}</b>
               </span>
               <strong>{percent}%</strong>
               <progress
+                data-goal-progress
                 value={percent}
                 max={100}
                 aria-label={`${percent}% da meta demonstrativa`}
