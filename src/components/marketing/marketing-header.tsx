@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 export function Brand() {
   return (
@@ -12,8 +12,19 @@ export function Brand() {
 }
 export function MarketingHeader() {
   const [open, setOpen] = useState(false);
+  const header = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const marker = document.getElementById("mk-scroll-sentinel");
+    if (!marker) return;
+    const observer = new IntersectionObserver(([entry]) =>
+      header.current?.classList.toggle("is-scrolled", !entry.isIntersecting),
+    );
+    observer.observe(marker);
+    return () => observer.disconnect();
+  }, []);
   return (
     <header
+      ref={header}
       className="mk-header"
       onKeyDown={(e) => {
         if (e.key === "Escape") setOpen(false);

@@ -1,0 +1,221 @@
+.mk-title-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.mk-title-mask > [data-title-block] {
+  display: block;
+}
+.mk-route-curtain {
+  position: fixed;
+  inset: 0;
+  background: var(--background);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+.mk-header {
+  position: fixed;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+  isolation: isolate;
+}
+.mk-header.is-scrolled {
+  background: var(--deep);
+  border-color: #ffffff20;
+}
+.mk-story.mk-motion-enabled {
+  height: 300vh;
+}
+.mk-story-pin {
+  position: relative;
+}
+.mk-story-light {
+  position: absolute;
+  inset: 0;
+  background: var(--background);
+  opacity: 0;
+  pointer-events: none;
+}
+.mk-story-heading,
+.mk-story-visual {
+  position: relative;
+  z-index: 1;
+}
+.mk-story-tokens {
+  z-index: 3;
+  pointer-events: none;
+}
+.mk-story-visual > [data-story-fox] {
+  z-index: 2;
+  pointer-events: none;
+}
+.mk-story-tokens > div {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+.mk-story-tokens strong {
+  font-size: 18px;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.mk-story-track {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 30px;
+  display: flex;
+  gap: 8px;
+  z-index: 1;
+}
+.mk-story-track > span {
+  height: 2px;
+  flex: 1;
+  background: var(--border);
+  overflow: hidden;
+}
+.mk-story-track i {
+  display: block;
+  height: 100%;
+  background: var(--success);
+  transform-origin: left center;
+}
+.mk-story:not(.mk-motion-enabled) .mk-story-light,
+.mk-story:not(.mk-motion-enabled) .mk-story-track {
+  display: none;
+}
+.mk-motion-enabled .mk-product-compact .mk-product-panels {
+  grid-template-columns: 1.2fr 1fr;
+}
+.mk-motion-enabled .mk-product-compact .mk-transactions {
+  display: block;
+}
+.mk-bars i {
+  transform-origin: center bottom;
+}
+.mk-site .mk-button svg,
+.mk-site .mk-text-link svg {
+  transition: transform 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .mk-site .mk-button:hover svg,
+  .mk-site .mk-text-link:hover svg {
+    transform: translate(2px, -2px);
+  }
+  .mk-feature-grid article {
+    transition: transform 0.2s;
+  }
+  .mk-feature-grid article:hover {
+    transform: translateY(-4px);
+  }
+  .mk-bills > div {
+    transition: background-color 0.2s;
+  }
+  .mk-bills > div:hover {
+    background: #ffffff08;
+  }
+}
+@media (min-width: 901px) and (max-height: 800px) {
+  .mk-story-pin {
+    min-height: 0;
+    padding-top: 85px;
+    padding-bottom: 60px;
+  }
+  .mk-story-visual {
+    height: 420px;
+  }
+  .mk-story .mk-product-content {
+    padding: 16px;
+  }
+  .mk-story .mk-stats > div {
+    padding: 12px;
+  }
+  .mk-story .mk-product-panels {
+    margin-top: 12px;
+  }
+  .mk-story .mk-transactions > div {
+    padding: 8px 0;
+  }
+  .mk-story .mk-goal {
+    padding: 15px;
+  }
+  .mk-story .mk-product-content > .mk-split {
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .mk-fox-visual {
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding-top: 310px;
+    margin-bottom: 20px;
+  }
+  .mk-fox {
+    top: 0;
+    left: 17%;
+    width: 66%;
+    height: 290px;
+  }
+  .mk-orbit {
+    height: 270px;
+    inset: 0 10% auto;
+  }
+  .mk-visual-caption {
+    top: 0;
+  }
+  .mk-fox-visual .mk-floating {
+    position: relative;
+    inset: auto;
+    transform: none;
+    min-width: 0;
+    padding: 14px;
+  }
+  .mk-fox-visual .mk-float-goal {
+    grid-column: 1/-1;
+  }
+  .mk-floating strong {
+    font-size: 19px;
+  }
+  .mk-hero .mk-demo-label {
+    bottom: -24px;
+  }
+  .mk-hero .mk-continue {
+    bottom: 18px;
+  }
+  .mk-header.is-scrolled {
+    background: var(--deep);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  .mk-route-curtain {
+    display: none;
+  }
+  .mk-site .mk-button:hover,
+  .mk-feature-grid article:hover,
+  .mk-site .mk-button:hover svg,
+  .mk-site .mk-text-link:hover svg {
+    transform: none;
+  }
+  .mk-header {
+    transition: none;
+  }
+}
+.mk-currency {
+  display: inline-grid;
+  font-variant-numeric: tabular-nums;
+}
+.mk-currency-space,
+.mk-currency-number {
+  grid-area: 1/1;
+}
+.mk-currency-space {
+  visibility: hidden;
+}

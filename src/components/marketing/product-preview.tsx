@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { demo, demoBalance } from "../../data/mock-finance";
 import { formatCurrency } from "../../features/finance/utils";
+import { AnimatedCurrency } from "./animated-currency";
 
 export function GoalPreview() {
   const percent = Math.round((demo.goal.current / demo.goal.target) * 100);
@@ -22,7 +23,7 @@ export function GoalPreview() {
         <h3>{demo.goal.name}</h3>
       </div>
       <strong>
-        {formatCurrency(demo.goal.current)}{" "}
+        <AnimatedCurrency value={demo.goal.current} />{" "}
         <small>de {formatCurrency(demo.goal.target)}</small>
       </strong>
       <progress value={percent} max="100" aria-label="Progresso da meta" />

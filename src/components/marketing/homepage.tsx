@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useRef } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -9,7 +9,8 @@ import {
   ChartNoAxesCombined,
   Check,
 } from "lucide-react";
-import { gsap } from "gsap";
+import { useMarketingMotion } from "./use-marketing-motion";
+import { useProductTransition } from "./use-product-transition";
 import { MarketingHeader, Brand } from "./marketing-header";
 import { ScrollStory } from "./scroll-story";
 import { GoalPreview, ProductPreview, ReportsPreview } from "./product-preview";
@@ -17,6 +18,7 @@ import { demo, demoBalance } from "../../data/mock-finance";
 import { formatCurrency } from "../../features/finance/utils";
 import "./marketing.css";
 import "./refinements.css";
+import "./motion.css";
 
 function FloatingFinanceCard({
   label,
@@ -37,48 +39,45 @@ function FloatingFinanceCard({
     </div>
   );
 }
-export function Homepage() {
-  const hero = useRef<HTMLElement>(null);
-  useLayoutEffect(() => {
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const ctx = gsap.context(() => {
-        gsap.from("[data-enter]", {
-          opacity: 0,
-          y: 22,
-          duration: 0.7,
-          stagger: 0.09,
-          ease: "power2.out",
-          clearProps: "all",
-        });
-        gsap.from(".mk-fox-visual", {
-          opacity: 0,
-          scale: 0.96,
-          duration: 0.85,
-          delay: 0.15,
-          clearProps: "all",
-        });
-      }, hero);
-      return () => ctx.revert();
-    });
-    return () => mm.revert();
-  }, []);
+export function Homepage({
+  onNavigate = (url: string) => window.location.assign(url),
+}: {
+  onNavigate?: (url: string) => void;
+}) {
+  const root = useRef<HTMLDivElement>(null);
+  useMarketingMotion(root);
+  const transition = useProductTransition(root, onNavigate);
   return (
-    <div className="mk-site">
+    <div className="mk-site" ref={root} {...transition}>
+      <div className="mk-route-curtain" aria-hidden="true" />
+      <span
+        id="mk-scroll-sentinel"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: 80,
+          width: 1,
+          height: 1,
+          pointerEvents: "none",
+        }}
+      />
       <a className="mk-skip" href="#conteudo">
         Pular para o conteúdo
       </a>
       <MarketingHeader />
       <main id="conteudo">
-        <section className="mk-hero" id="inicio" ref={hero}>
+        <section className="mk-hero" id="inicio">
           <div className="mk-hero-copy">
             <p className="mk-kicker" data-enter>
               <span /> Estratégia para uma vida financeira mais leve
             </p>
             <h1 data-enter>
-              Entenda seu dinheiro.
-              <br />
-              <em>Planeje com astúcia.</em>
+              <span className="mk-title-mask">
+                <span data-title-block>Entenda seu dinheiro.</span>
+              </span>
+              <span className="mk-title-mask">
+                <em data-title-block>Planeje com astúcia.</em>
+              </span>
             </h1>
             <p className="mk-lead" data-enter>
               A Astú reúne receitas, despesas, contas, assinaturas e metas para

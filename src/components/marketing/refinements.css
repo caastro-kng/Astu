@@ -50,8 +50,17 @@
   color: var(--muted-foreground);
   letter-spacing: 0;
 }
-.app-main { animation: astu-enter .28s ease-out; }
-@keyframes astu-enter { from { opacity: .3; } to { opacity: 1; } }
+.app-main {
+  animation: astu-enter 0.28s ease-out;
+}
+@keyframes astu-enter {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .app-main {
     animation: none;

@@ -1,6 +1,9 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { createNarrative } from "./narrative-motion";
+import { demo, demoBalance } from "../../data/mock-finance";
+import { formatCurrency } from "../../features/finance/utils";
 import { ProductPreview } from "./product-preview";
 gsap.registerPlugin(ScrollTrigger);
 const scenes = [
@@ -39,65 +42,7 @@ export function ScrollStory() {
       () => {
         root.current?.classList.add("mk-motion-enabled");
         const ctx = gsap.context(() => {
-          const panels = gsap.utils.toArray<HTMLElement>("[data-story-copy]");
-          gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 });
-          gsap.set("[data-story-product]", {
-            autoAlpha: 0,
-            scale: 0.78,
-            y: 50,
-          });
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: root.current,
-              start: "top top",
-              end: "bottom bottom",
-              pin: root.current?.querySelector(".mk-story-pin"),
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          });
-          panels.forEach((panel, i) => {
-            if (i) {
-              tl.to(
-                panels[i - 1],
-                { autoAlpha: 0, y: -24, duration: 0.15 },
-                i - 0.2,
-              ).to(panel, { autoAlpha: 1, y: 0, duration: 0.2 }, i);
-            }
-          });
-          tl.to(
-            "[data-story-token]",
-            { rotation: 0, x: 0, y: 0, stagger: 0.04, duration: 0.6 },
-            0.55,
-          )
-            .to(
-              "[data-story-fox]",
-              {
-                scale: 0.6,
-                xPercent: 45,
-                yPercent: 35,
-                autoAlpha: 0,
-                duration: 0.6,
-              },
-              1.4,
-            )
-            .to(
-              "[data-story-token]",
-              { autoAlpha: 0, scale: 0.9, duration: 0.35 },
-              1.65,
-            )
-            .to(
-              "[data-story-product]",
-              { autoAlpha: 1, scale: 1, y: 0, duration: 0.65 },
-              1.8,
-            )
-            .to(
-              "[data-story-product] .mk-goal",
-              { outline: "2px solid #52C7B0", duration: 0.2 },
-              3,
-            )
-            .to("[data-story-product]", { scale: 1.04, duration: 0.5 }, 3.8);
-          tl.to({}, { duration: 0.4 });
+          if (root.current) createNarrative(root.current);
         }, root);
         return () => {
           ctx.revert();
@@ -110,6 +55,14 @@ export function ScrollStory() {
   return (
     <section className="mk-story" id="como-funciona" ref={root}>
       <div className="mk-story-pin">
+        <div className="mk-story-light" aria-hidden="true" />
+        <div className="mk-story-track" aria-hidden="true">
+          {scenes.map(([name]) => (
+            <span key={name}>
+              <i />
+            </span>
+          ))}
+        </div>
         <div className="mk-story-heading">
           <span className="mk-kicker">DO PRIMEIRO OLHAR AO PRÓXIMO PASSO</span>
           <div className="mk-story-copies">
@@ -149,7 +102,17 @@ export function ScrollStory() {
                   key={label}
                 >
                   {label}
-                  <span>✓</span>
+                  <strong>
+                    {
+                      [
+                        formatCurrency(demo.income),
+                        formatCurrency(demo.expenses),
+                        formatCurrency(demo.subscriptions[0].amount),
+                        formatCurrency(demoBalance),
+                        formatCurrency(demo.goal.current),
+                      ][i]
+                    }
+                  </strong>
                 </div>
               ),
             )}
