@@ -88,6 +88,13 @@ export function FinanceDashboardApp() {
   const [form, setForm] = useState<EntryForm>(initialForm);
   const [period, setPeriod] = useState("Este mês");
 
+  const navigateInsideApp = (event: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    event.preventDefault();
+    if (window.location.pathname === url) return;
+    window.history.pushState({}, "", url);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
+
   const summary = useMemo(() => totals(data.transactions), [data.transactions]);
   const subscriptions = useMemo(
     () => activeMonthly(data.subscriptions),
@@ -162,6 +169,7 @@ export function FinanceDashboardApp() {
               key={href}
               className={href === "/app" ? "is-active" : ""}
               href={href}
+              onClick={(event) => navigateInsideApp(event, href)}
             >
               <Icon size={18} />
               <span>{label}</span>
@@ -257,7 +265,7 @@ export function FinanceDashboardApp() {
             </div>
             <strong>{formatCurrency(subscriptions)}</strong>
             <p>{data.subscriptions.filter((item) => item.active).length} assinatura(s) ativa(s)</p>
-            <a href="/app/assinaturas">Gerenciar assinaturas</a>
+            <a href="/app/assinaturas" onClick={(event) => navigateInsideApp(event, "/app/assinaturas")}>Gerenciar assinaturas</a>
           </article>
         </section>
 
@@ -373,7 +381,7 @@ export function FinanceDashboardApp() {
                     "Nenhuma assinatura cadastrada"}
                 </strong>
               </div>
-              <a href="/app/assinaturas">
+              <a href="/app/assinaturas" onClick={(event) => navigateInsideApp(event, "/app/assinaturas")}>
                 <CreditCard size={16} />
                 Ver contas
               </a>

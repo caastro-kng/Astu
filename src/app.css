@@ -14,3 +14,8 @@
 .subscription-modal{width:min(470px,100%);max-height:min(760px,calc(100vh - 32px));overflow:auto;padding:30px 34px}.modal-eyebrow{font-size:10px;color:#16856b;text-transform:uppercase;letter-spacing:.15em;font-weight:800}.subscription-modal h2{font-size:28px;margin:2px 0 0;letter-spacing:-.04em}.modal-description{font-size:14px;color:#6b7c91;line-height:1.5;margin:0 0 6px}.subscription-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.subscription-form-row label small{font-size:10px;color:#8090a3;font-weight:500}.subscription-hint{border:1px solid #dce7e4;background:#f5faf8;border-radius:10px;padding:11px;color:#60756f;font-size:11px;margin:0}.subscription-save{border:0;border-radius:10px;background:#48dbad;color:#071a2b;padding:13px;font-weight:800;cursor:pointer}
 @media(max-width:1000px){.subscription-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.subscription-grid{grid-template-columns:1fr}.subscription-modal{padding:25px 20px}.subscription-form-row{grid-template-columns:1fr}}
+
+/* Seamless route transition inside the financial workspace */
+.finance-route-transition{min-height:100vh;animation:finance-route-in .22s cubic-bezier(.2,.7,.2,1) both}
+@keyframes finance-route-in{from{opacity:.72;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.finance-route-transition{animation:none}}
