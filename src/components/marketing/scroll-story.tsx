@@ -95,18 +95,30 @@ export function ScrollStory() {
           .to({}, { duration: 0.6 });
       }, sectionRef);
 
-      const refresh = () => {
-        ScrollTrigger.refresh();
-        if (window.location.hash === "#como-funciona") {
-          const storyTrigger = ScrollTrigger.getById("astu-how-it-works");
-          if (storyTrigger) window.scrollTo({ top: storyTrigger.start });
-        }
-      };
-      if (document.fonts.status === "loaded") requestAnimationFrame(refresh);
-      else void document.fonts.ready.then(refresh);
       return () => context.revert();
     });
-    return () => mm.revert();
+
+    let cancelled = false;
+    const refreshAndAlignAnchor = () => {
+      requestAnimationFrame(() => {
+        if (cancelled) return;
+        ScrollTrigger.refresh();
+        if (window.location.hash !== "#como-funciona") return;
+        const storyTrigger = ScrollTrigger.getById("astu-how-it-works");
+        window.scrollTo({
+          top: storyTrigger
+            ? storyTrigger.start
+            : Math.max(0, sectionRef.current!.offsetTop - 80),
+        });
+      });
+    };
+    if (document.fonts.status === "loaded") refreshAndAlignAnchor();
+    else void document.fonts.ready.then(refreshAndAlignAnchor);
+
+    return () => {
+      cancelled = true;
+      mm.revert();
+    };
   }, []);
 
   return (
