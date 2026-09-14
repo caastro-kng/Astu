@@ -327,7 +327,15 @@
   padding: 34px 0;
 }
 .mk-phone-story .mk-story-copy-stack {
-  min-height: 355px;
+  min-height: 420px;
+}
+.mk-phone-story .mk-story-copy-stack > [data-story-copy] {
+  justify-content: flex-start;
+  padding-top: 62px;
+}
+.mk-phone-story .mk-story-copy-stack [data-story-copy] > p:last-of-type {
+  max-width: 390px;
+  padding-bottom: 72px;
 }
 .mk-phone-story .mk-story-copy-stack .mk-button {
   align-self: flex-start;
@@ -383,7 +391,11 @@
 }
 .mk-phone-home-time { font-size: 10px; font-weight: 800; }
 .mk-phone-home-icons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px 18px; margin-top: 66px; }
-.mk-phone-home-icons > span { aspect-ratio: 1; border-radius: 16px; background: #ffffff12; border: 1px solid #ffffff0f; }
+.mk-phone-home-icons > span { aspect-ratio: 1; border-radius: 16px; background: #ffffff12; border: 1px solid #ffffff18; display: grid; place-content: center; gap: 4px; }
+.mk-phone-home-icons > span i { display: block; width: 18px; height: 5px; border-radius: 5px; background: #ffffff80; }
+.mk-phone-home-icons > .shape-b i:first-child, .mk-phone-home-icons > .shape-e i:last-child { width: 9px; justify-self: center; background: var(--accent); }
+.mk-phone-home-icons > .shape-c i, .mk-phone-home-icons > .shape-f i:first-child { background: #ea5b1b99; }
+.mk-phone-home-icons > .shape-d, .mk-phone-home-icons > .shape-g { border-radius: 50%; }
 .mk-phone-home-icons button { border: 0; background: transparent; color: #fff; display: grid; gap: 5px; place-items: center; font-size: 9px; }
 .mk-phone-home-icons button img { width: 54px; height: 54px; border-radius: 15px; object-fit: cover; }
 .mk-phone-splash { display: grid; place-content: center; justify-items: center; background: var(--deep); color: #fff; z-index: 4; }
@@ -453,7 +465,7 @@
 .mk-phone-goal article > div b { font-size: 15px; }
 .mk-phone-goal article > div small { color: var(--muted-foreground); }
 .mk-phone-goal article p { margin-top: 17px; border-radius: 9px; padding: 9px; background: var(--cream); color: var(--primary); font-size: 9px; }
-.mk-tap-indicator { position: absolute; z-index: 15; left: 48%; top: 42%; width: 17px; height: 17px; border: 2px solid #fff; border-radius: 50%; background: #52c7b0cc; box-shadow: 0 2px 8px #081b2d55; }
+.mk-tap-indicator { position: absolute; z-index: 15; left: 0; top: 0; width: 17px; height: 17px; border: 2px solid #fff; border-radius: 50%; background: #52c7b0cc; box-shadow: 0 2px 8px #081b2d55; }
 .mk-tap-indicator i { position: absolute; inset: -5px; border: 1px solid var(--accent); border-radius: 50%; }
 .mk-phone-static { width: min(310px, 100%); aspect-ratio: 9/19.5; margin: 0 auto; }
 .mk-phone-static .mk-phone-screen { opacity: 1 !important; visibility: visible !important; transform: none !important; }

@@ -10,6 +10,7 @@ import {
   Target,
   Wallet,
 } from "lucide-react";
+import type { RefObject } from "react";
 import {
   phoneDemoData,
   phoneDemoUpdatedBalance,
@@ -17,27 +18,38 @@ import {
 } from "../../data/mock-finance";
 import { formatCurrency } from "../../features/finance/utils";
 
-function PhoneBottomNavigation({ goals = false }: { goals?: boolean }) {
+export type PhoneDemoRefs = {
+  viewport: RefObject<HTMLDivElement | null>;
+  icon: RefObject<HTMLButtonElement | null>;
+  add: RefObject<HTMLButtonElement | null>;
+  description: RefObject<HTMLLabelElement | null>;
+  category: RefObject<HTMLLabelElement | null>;
+  value: RefObject<HTMLLabelElement | null>;
+  save: RefObject<HTMLButtonElement | null>;
+  goals: RefObject<HTMLSpanElement | null>;
+};
+
+function PhoneBottomNavigation({ goals = false, targetRef }: { goals?: boolean; targetRef?: RefObject<HTMLSpanElement | null> }) {
   return (
     <nav className="mk-phone-nav" aria-label="Navegação demonstrativa">
       <span className={goals ? "" : "active"}><Home />Início</span>
       <span><ReceiptText />Registros</span>
-      <span className={goals ? "active" : ""} data-phone-goals><Target />Metas</span>
+      <span className={goals ? "active" : ""} data-phone-goals ref={targetRef}><Target />Metas</span>
     </nav>
   );
 }
 
-export function PhoneHomeScreen() {
+export function PhoneHomeScreen({ iconRef }: { iconRef?: RefObject<HTMLButtonElement | null> }) {
   return (
     <div className="mk-phone-screen mk-phone-home" data-phone-home>
       <div className="mk-phone-home-time">09:41</div>
       <div className="mk-phone-home-icons">
-        <span /><span /><span />
-        <button type="button" data-phone-icon tabIndex={-1} aria-label="Abrir Astú">
+        <span className="shape-a"><i /><i /></span><span className="shape-b"><i /><i /></span><span className="shape-c"><i /><i /></span>
+        <button ref={iconRef} type="button" data-phone-icon tabIndex={-1} aria-label="Abrir Astú">
           <img src="/brand/astu/astu-app-icon.png" width="58" height="58" alt="" />
           <b>Astú</b>
         </button>
-        <span /><span /><span /><span />
+        <span className="shape-d"><i /><i /></span><span className="shape-e"><i /><i /></span><span className="shape-f"><i /><i /></span><span className="shape-g"><i /><i /></span>
       </div>
     </div>
   );
@@ -63,7 +75,7 @@ function MiniChart({ updated = false }: { updated?: boolean }) {
   );
 }
 
-export function MobileOverviewDemo({ updated = false }: { updated?: boolean }) {
+export function MobileOverviewDemo({ updated = false, refs }: { updated?: boolean; refs?: PhoneDemoRefs }) {
   const balance = updated ? phoneDemoUpdatedBalance : phoneDemoData.initialBalance;
   const expenses = updated ? phoneDemoUpdatedExpenses : phoneDemoData.initialExpenses;
   return (
@@ -77,22 +89,22 @@ export function MobileOverviewDemo({ updated = false }: { updated?: boolean }) {
       <section className="mk-phone-chart-card" data-phone-card><small>Resumo do mês</small><MiniChart updated={updated} /></section>
       <article className="mk-phone-next" data-phone-card><CalendarDays /><span><small>Próxima conta</small><b>{phoneDemoData.nextBill.name}</b></span><strong>{formatCurrency(phoneDemoData.nextBill.amount)}</strong></article>
       <article className="mk-phone-new-row" data-phone-new-row><Check /><span><b>{phoneDemoData.expenseDescription}</b><small>{phoneDemoData.expenseCategory}</small></span><strong>− {formatCurrency(phoneDemoData.demonstrationExpense)}</strong></article>
-      <button className="mk-phone-add" type="button" tabIndex={-1} data-phone-add aria-label="Nova transação"><Plus /></button>
-      <PhoneBottomNavigation />
+      <button ref={refs?.add} className="mk-phone-add" type="button" tabIndex={-1} data-phone-add aria-label="Nova transação"><Plus /></button>
+      <PhoneBottomNavigation targetRef={refs?.goals} />
     </div>
   );
 }
 
-export function TransactionDemo() {
+export function TransactionDemo({ refs }: { refs?: PhoneDemoRefs }) {
   return (
     <div className="mk-phone-sheet" data-phone-sheet>
       <i />
       <small>NOVA MOVIMENTAÇÃO</small>
       <h3>Registrar despesa</h3>
-      <label data-phone-field>Descrição <span>{phoneDemoData.expenseDescription}</span></label>
-      <label data-phone-field>Categoria <span>{phoneDemoData.expenseCategory}</span></label>
-      <label data-phone-field>Valor <span>{formatCurrency(phoneDemoData.demonstrationExpense)}</span></label>
-      <button type="button" tabIndex={-1} data-phone-save>Salvar despesa</button>
+      <label ref={refs?.description} data-phone-field>Descrição <span>{phoneDemoData.expenseDescription}</span></label>
+      <label ref={refs?.category} data-phone-field>Categoria <span>{phoneDemoData.expenseCategory}</span></label>
+      <label ref={refs?.value} data-phone-field>Valor <span>{formatCurrency(phoneDemoData.demonstrationExpense)}</span></label>
+      <button ref={refs?.save} type="button" tabIndex={-1} data-phone-save>Salvar despesa</button>
     </div>
   );
 }
@@ -112,18 +124,18 @@ export function TapIndicator() {
   return <span className="mk-tap-indicator" data-phone-tap aria-hidden="true"><i /></span>;
 }
 
-export function PhoneFrame() {
+export function PhoneFrame({ refs }: { refs: PhoneDemoRefs }) {
   return (
     <div className="mk-phone-wrap" data-phone-frame>
       <div className="mk-phone-glow" data-phone-glow />
       <div className="mk-phone-frame">
         <span className="mk-phone-island" />
-        <div className="mk-phone-viewport">
-          <PhoneHomeScreen />
+        <div className="mk-phone-viewport" ref={refs.viewport}>
+          <PhoneHomeScreen iconRef={refs.icon} />
           <AstuSplashScreen />
-          <MobileOverviewDemo />
+          <MobileOverviewDemo refs={refs} />
           <GoalDemo />
-          <TransactionDemo />
+          <TransactionDemo refs={refs} />
           <div className="mk-phone-toast" data-phone-toast><Check /> Despesa salva</div>
           <TapIndicator />
         </div>
