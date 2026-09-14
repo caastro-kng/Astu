@@ -4,3 +4,10 @@
 .finance-flow .recharts-default-tooltip{background:#fff!important;border:1px solid #dce4e7!important;border-radius:10px!important;box-shadow:0 12px 30px #071a2b24!important;padding:9px 12px!important}
 .finance-flow .recharts-tooltip-label,.finance-flow .recharts-tooltip-item{color:#0b2034!important;font-weight:700!important}
 .finance-flow .recharts-tooltip-item-value{color:#16856b!important}
+
+/* Keep overview typography aligned with the other finance routes */
+.finance-dashboard-shell{font-size:14px}
+.finance-heading h1{font-size:clamp(27px,3vw,38px);line-height:1.1}
+.finance-panel-heading h2{font-size:19px;line-height:1.25}
+.finance-donut .recharts-sector{transition:opacity .16s ease}
+.finance-donut:hover .recharts-sector{cursor:default}

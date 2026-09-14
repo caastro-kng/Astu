@@ -20,7 +20,6 @@ import {
   Pie,
   PieChart,
   ResponsiveContainer,
-  Tooltip,
 } from "recharts";
 import { useFinance } from "../../features/finance/use-finance";
 import type { TransactionType } from "../../features/finance/types";
@@ -322,7 +321,7 @@ export function FinanceDashboardApp() {
             </div>
 
             <div className="finance-chart-layout">
-              <div className="finance-donut">
+              <div className="finance-donut" role="img" aria-label={`Gráfico do fluxo financeiro: receitas ${formatCurrency(summary.income)}, despesas ${formatCurrency(summary.expenses)}, assinaturas ${formatCurrency(subscriptions)} e saldo ${formatCurrency(summary.balance)}`}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -338,7 +337,6 @@ export function FinanceDashboardApp() {
                         <Cell key={item.name} fill={item.color} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div>

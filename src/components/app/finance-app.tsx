@@ -4,24 +4,68 @@ function Empty({title,text,add}:{title:string;text:string;add?:()=>void}){return
 function Form({close,save}:{close:()=>void;save:(t:TransactionType,d:string,a:number,c:string,date:string)=>void}){const[t,setT]=useState<TransactionType>("expense"),[d,setD]=useState(""),[a,setA]=useState(""),[c,setC]=useState(categories[0]),[date,setDate]=useState(today());return <div className="modal-backdrop"><form className="modal finance-form" onSubmit={e=>{e.preventDefault();const cents=Math.round(Number(a.replace(',','.'))*100);if(d&&cents>0)save(t,d,cents,c,date)}}><button className="modal-close" type="button" onClick={close}>×</button><h2>Novo movimento</h2><div className="type-switch"><button type="button" className={t==='expense'?'active':''} onClick={()=>setT('expense')}>Despesa</button><button type="button" className={t==='income'?'active income':''} onClick={()=>setT('income')}>Receita</button></div><label>Descrição<input required value={d} onChange={e=>setD(e.target.value)}/></label><label>Valor<input required inputMode="decimal" value={a} onChange={e=>setA(e.target.value)} placeholder="0,00"/></label><label>Categoria<select value={c} onChange={e=>setC(e.target.value)}>{categories.map(x=><option key={x}>{x}</option>)}</select></label><label>Data<input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label><button className="primary">Salvar movimento</button></form></div>}
 function Overview({data,add}:{data:FinanceData;add:()=>void}){if(!data.transactions.length)return <Empty title="Vamos organizar sua vida financeira?" text="Adicione sua primeira receita ou despesa para começar a acompanhar seu dinheiro." add={add}/>;return <><Metrics data={data}/><section className="content-grid"><article className="panel"><h2>Movimentos recentes</h2>{data.transactions.slice(-5).reverse().map(x=><div className="row" key={x.id}><span>{x.categoryId[0]}</span><b>{x.description}<small>{x.categoryId} · {x.date}</small></b><strong className={x.type}>{x.type==='income'?'+ ':'- '}{formatCurrency(x.amount)}</strong></div>)}</article><article className="insight"><p>Dica da Astú</p><h2>Registre cada movimento para decidir com clareza.</h2><span>Suas metas ajudam a transformar planos em próximos passos.</span></article></section></>}
 function Movements({data,setData,add}:{data:FinanceData;setData:(x:FinanceData)=>void;add:()=>void}){const[filter,setFilter]=useState("all"),list=data.transactions.filter(x=>filter==='all'||x.type===filter);return <><div className="page-actions"><div className="filters">{[["all","Todos"],["income","Receitas"],["expense","Despesas"]].map(([v,l])=><button key={v} className={filter===v?'active':''} onClick={()=>setFilter(v)}>{l}</button>)}</div><button className="primary" onClick={add}><Plus size={17}/>Novo movimento</button></div>{!list.length?<Empty title="Você ainda não registrou nenhum movimento." text="Ao adicionar receitas e despesas, a Astú montará seus resumos automaticamente." add={add}/>:<article className="panel table-panel"><div className="table-head"><span>Descrição</span><span>Categoria</span><span>Data</span><span>Valor</span><span>Ações</span></div>{list.map(x=><div className="table-row" key={x.id}><b>{x.description}</b><span>{x.categoryId}</span><span>{x.date}</span><strong className={x.type}>{x.type==='income'?'+ ':'- '}{formatCurrency(x.amount)}</strong><button onClick={()=>{if(confirm('Excluir este movimento?'))setData({...data,transactions:data.transactions.filter(y=>y.id!==x.id)})}}>Excluir</button></div>)}</article>}</>}
+const subscriptionCatalog=[
+  {name:"Outro serviço",plans:[]},
+  {name:"Netflix",plans:[
+    {name:"Padrão com anúncios",price:"20,90",frequency:"monthly" as const},
+    {name:"Padrão",price:"44,90",frequency:"monthly" as const},
+    {name:"Premium",price:"59,90",frequency:"monthly" as const},
+  ]},
+  {name:"Disney+",plans:[
+    {name:"Padrão com anúncios",price:"29,90",frequency:"monthly" as const},
+    {name:"Padrão",price:"49,90",frequency:"monthly" as const},
+    {name:"Premium",price:"69,90",frequency:"monthly" as const},
+    {name:"Padrão anual",price:"407,90",frequency:"yearly" as const},
+    {name:"Premium anual",price:"587,90",frequency:"yearly" as const},
+  ]},
+  {name:"Spotify",plans:[
+    {name:"Universitário",price:"12,90",frequency:"monthly" as const},
+    {name:"Individual",price:"23,90",frequency:"monthly" as const},
+    {name:"Duo",price:"31,90",frequency:"monthly" as const},
+    {name:"Família",price:"40,90",frequency:"monthly" as const},
+  ]},
+  {name:"Amazon Prime",plans:[
+    {name:"Mensal",price:"19,90",frequency:"monthly" as const},
+    {name:"Anual",price:"166,80",frequency:"yearly" as const},
+  ]},
+  {name:"Max",plans:[
+    {name:"Básico com anúncios",price:"29,90",frequency:"monthly" as const},
+    {name:"Standard",price:"44,90",frequency:"monthly" as const},
+    {name:"Platinum",price:"55,90",frequency:"monthly" as const},
+    {name:"Básico anual",price:"274,80",frequency:"yearly" as const},
+  ]},
+  {name:"Apple Music",plans:[
+    {name:"Universitário",price:"11,90",frequency:"monthly" as const},
+    {name:"Individual",price:"23,90",frequency:"monthly" as const},
+    {name:"Família",price:"40,90",frequency:"monthly" as const},
+  ]},
+];
+
 function Subscriptions({data,setData}:{data:FinanceData;setData:(x:FinanceData)=>void}) {
-  const services=[
-    {name:"Outro serviço",price:""},
-    {name:"Netflix",price:"44,90"},
-    {name:"Disney+",price:"43,90"},
-    {name:"Spotify",price:"23,90"},
-    {name:"Amazon Prime",price:"19,90"},
-    {name:"Max",price:"34,90"},
-    {name:"Apple Music",price:"21,90"},
-  ];
   const [open,setOpen]=useState(false);
   const [service,setService]=useState("Outro serviço");
+  const [plan,setPlan]=useState("");
   const [name,setName]=useState("");
   const [amount,setAmount]=useState("");
   const [frequency,setFrequency]=useState<"monthly"|"yearly">("monthly");
   const [nextBillingDate,setNextBillingDate]=useState(today());
-  const openModal=()=>{setService("Outro serviço");setName("");setAmount("");setFrequency("monthly");setNextBillingDate(today());setOpen(true)};
-  const chooseService=(value:string)=>{const preset=services.find(item=>item.name===value);setService(value);setName(value==="Outro serviço"?"":value);setAmount(preset?.price||"")};
+  const selectedService=subscriptionCatalog.find(item=>item.name===service)??subscriptionCatalog[0];
+  const openModal=()=>{setService("Outro serviço");setPlan("");setName("");setAmount("");setFrequency("monthly");setNextBillingDate(today());setOpen(true)};
+  const applyPlan=(serviceName:string,planName:string)=>{
+    const catalogService=subscriptionCatalog.find(item=>item.name===serviceName);
+    const catalogPlan=catalogService?.plans.find(item=>item.name===planName);
+    setPlan(planName);
+    if(catalogPlan){setAmount(catalogPlan.price);setFrequency(catalogPlan.frequency)}
+  };
+  const chooseService=(value:string)=>{
+    const catalogService=subscriptionCatalog.find(item=>item.name===value)??subscriptionCatalog[0];
+    const firstPlan=catalogService.plans[0];
+    setService(value);
+    setName(value==="Outro serviço"?"":value);
+    setPlan(firstPlan?.name??"");
+    setAmount(firstPlan?.price??"");
+    setFrequency(firstPlan?.frequency??"monthly");
+  };
   const submit=(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     const cents=Math.round(Number(amount.replace(".","").replace(",","."))*100);
@@ -29,7 +73,7 @@ function Subscriptions({data,setData}:{data:FinanceData;setData:(x:FinanceData)=
     const date=new Date(`${nextBillingDate}T12:00:00`);
     const now=new Date().toISOString();
     if(finalName&&cents>0){
-      setData({...data,subscriptions:[...data.subscriptions,{id:id(),name:finalName,amount:cents,billingDay:date.getDate(),frequency,active:true,nextBillingDate,createdAt:now,updatedAt:now}]});
+      setData({...data,subscriptions:[...data.subscriptions,{id:id(),name:finalName,amount:cents,billingDay:date.getDate(),frequency,active:true,nextBillingDate,notes:plan?`Plano: ${plan}`:undefined,createdAt:now,updatedAt:now}]});
       setOpen(false);
     }
   };
@@ -42,7 +86,7 @@ function Subscriptions({data,setData}:{data:FinanceData;setData:(x:FinanceData)=
       <Empty title="Você ainda não cadastrou assinaturas." text="Adicione serviços e contas recorrentes para acompanhar os próximos vencimentos." add={openModal}/>:
       <div className="subscription-grid">
         {data.subscriptions.map(x=><article className={x.active?"subscription-card":"subscription-card is-paused"} key={x.id}>
-          <div className="subscription-card-top"><span className="subscription-mark">{x.name.slice(0,1).toUpperCase()}</span><div><small>{x.active?"ATIVA":"PAUSADA"}</small><h2>{x.name}</h2></div></div>
+          <div className="subscription-card-top"><span className="subscription-mark">{x.name.slice(0,1).toUpperCase()}</span><div><small>{x.active?"ATIVA":"PAUSADA"}</small><h2>{x.name}</h2>{x.notes&&<em>{x.notes.replace("Plano: ","")}</em>}</div></div>
           <strong>{formatCurrency(x.amount)} <small>/{x.frequency==="monthly"?"mês":"ano"}</small></strong>
           <p><CalendarDays size={15}/>Próxima cobrança: {new Date(`${x.nextBillingDate}T12:00:00`).toLocaleDateString("pt-BR")}</p>
           <div className="subscription-card-actions">
@@ -54,18 +98,19 @@ function Subscriptions({data,setData}:{data:FinanceData;setData:(x:FinanceData)=
     }
     {open&&<div className="modal-backdrop">
       <form className="modal finance-form subscription-modal" onSubmit={submit}>
-        <button type="button" className="modal-close" onClick={()=>setOpen(false)}>×</button>
+        <button type="button" className="modal-close" onClick={()=>setOpen(false)} aria-label="Fechar">×</button>
         <span className="modal-eyebrow">Assinaturas</span>
         <h2>Adicionar assinatura</h2>
-        <p className="modal-description">Escolha um serviço e um plano para preencher mais rápido, ou cadastre outro livremente.</p>
-        <label>Serviço<select value={service} onChange={e=>chooseService(e.target.value)}>{services.map(item=><option key={item.name}>{item.name}</option>)}</select></label>
+        <p className="modal-description">Escolha o serviço e o plano. A Astú preenche o preço automaticamente, mas você pode ajustá-lo.</p>
+        <label>Serviço<select value={service} onChange={e=>chooseService(e.target.value)}>{subscriptionCatalog.map(item=><option key={item.name}>{item.name}</option>)}</select></label>
+        {selectedService.plans.length>0&&<label>Plano<select value={plan} onChange={e=>applyPlan(service,e.target.value)}>{selectedService.plans.map(item=><option key={item.name}>{item.name}</option>)}</select></label>}
         <label>Nome da assinatura<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Ex.: academia, jornal, aplicativo"/></label>
         <div className="subscription-form-row">
-          <label>Valor<input required inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0,00"/><small>Valor sugerido e sempre editável.</small></label>
+          <label>Valor<input required inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0,00"/><small>Preenchido pelo plano e sempre editável.</small></label>
           <label>Periodicidade<select value={frequency} onChange={e=>setFrequency(e.target.value as "monthly"|"yearly")}><option value="monthly">Mensal</option><option value="yearly">Anual</option></select></label>
         </div>
         <label>Próxima cobrança<input required type="date" value={nextBillingDate} onChange={e=>setNextBillingDate(e.target.value)}/></label>
-        <p className="subscription-hint">ⓘ Preços de referência. Confirme o valor cobrado no seu plano.</p>
+        <p className="subscription-hint">ⓘ Valores de referência consultados em setembro de 2026. Confirme promoções ou cobranças feitas por parceiros.</p>
         <button className="subscription-save">Salvar assinatura</button>
       </form>
     </div>}
