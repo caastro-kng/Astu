@@ -1,3 +1,3 @@
 import { AstuHero } from "./components/astu/astu-hero"
-import { FinancialDashboard } from "./components/astu/financial-dashboard"
-export function App(){return <><AstuHero/><main><section id="financial-dashboard" className="dashboard-shell" aria-labelledby="dashboard-title"><FinancialDashboard/></section></main></>}
+import { FinanceApp } from "./components/app/finance-app"
+export function App(){return window.location.pathname.startsWith("/app")?<FinanceApp/>:<AstuHero dashboardTargetId="app"/>}
