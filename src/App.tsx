@@ -1,17 +1,8 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Homepage } from "./components/marketing/homepage";
 
-const FinanceApp = lazy(() =>
-  import("./components/app/finance-app").then((module) => ({
-    default: module.FinanceApp,
-  })),
-);
-
-const FinanceDashboardApp = lazy(() =>
-  import("./components/app/finance-dashboard-app").then((module) => ({
-    default: module.FinanceDashboardApp,
-  })),
-);
+import { FinanceApp } from "./components/app/finance-app";
+import { FinanceDashboardApp } from "./components/app/finance-dashboard-app";
 
 function RouteFocus() {
   useEffect(() => {
@@ -45,13 +36,9 @@ export function App() {
   if (!inApp) return <Homepage onNavigate={navigate} />;
 
   return (
-    <Suspense
-      fallback={
-        <main aria-busy="true">Carregando sua organização financeira…</main>
-      }
-    >
+    <div className="finance-route-transition" key={isOverview ? "overview" : path}>
       {isOverview ? <FinanceDashboardApp /> : <FinanceApp />}
       <RouteFocus />
-    </Suspense>
+    </div>
   );
 }
