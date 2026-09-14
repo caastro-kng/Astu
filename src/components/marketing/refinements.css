@@ -1,0 +1,73 @@
+/* Progressive enhancement: all narrative content works without ScrollTrigger. */
+.mk-story:not(.mk-motion-enabled) {
+  height: auto;
+}
+.mk-story:not(.mk-motion-enabled) .mk-story-pin {
+  height: auto;
+  min-height: 0;
+  display: block;
+  overflow: visible;
+}
+.mk-story:not(.mk-motion-enabled) .mk-story-copies {
+  height: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 38px;
+}
+.mk-story:not(.mk-motion-enabled) .mk-story-copies article {
+  position: static;
+}
+.mk-story:not(.mk-motion-enabled) .mk-story-visual {
+  height: auto;
+  margin-top: 45px;
+}
+.mk-story:not(.mk-motion-enabled) .mk-story-visual > img,
+.mk-story:not(.mk-motion-enabled) .mk-story-tokens {
+  display: none;
+}
+.mk-story:not(.mk-motion-enabled) [data-story-product] {
+  position: static;
+}
+.mk-product-content > .mk-split {
+  margin-bottom: 22px;
+  align-items: center;
+}
+.mk-stats > div > span {
+  font-size: 10px;
+  color: #bbccdc;
+}
+.mk-bars > div {
+  min-width: 0;
+}
+.mk-bars b {
+  font-size: 9px;
+  white-space: nowrap;
+  letter-spacing: -0.04em;
+}
+.mk-goal > strong > small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  letter-spacing: 0;
+}
+.app-main { animation: astu-enter .28s ease-out; }
+@keyframes astu-enter { from { opacity: .3; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .app-main {
+    animation: none;
+  }
+}
+@media (max-width: 600px) {
+  .mk-bars {
+    gap: 9px;
+  }
+  .mk-bars b {
+    font-size: 8px;
+  }
+  .mk-report {
+    padding: 22px;
+  }
+  .mk-story:not(.mk-motion-enabled) .mk-story-copies {
+    grid-template-columns: 1fr;
+  }
+}
