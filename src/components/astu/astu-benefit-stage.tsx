@@ -1,0 +1,1 @@
+const benefits=["Veja para onde o dinheiro vai","Acompanhe suas metas","Antecipe contas e limites","Decida com mais segurança"];export function AstuBenefitStage(){return <div className="benefits" aria-label="Benefícios"><span>Com a Astú</span>{benefits.map((benefit,index)=><p data-benefit={index} key={benefit}>{benefit}</p>)}</div>}

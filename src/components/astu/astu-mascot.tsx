@@ -1,0 +1,1 @@
+export function AstuMascot({className=""}:{className?:string}){return <div className={`mascot ${className}`} aria-label="Mascote raposa da Astú" role="img"><img src="/brand/astu/astu-mascot.png" alt="Mascote raposa da Astú" onError={e=>{e.currentTarget.style.display="none"}}/><span aria-hidden="true">A</span></div>}
