@@ -19,3 +19,10 @@
 .finance-route-transition{min-height:100vh;animation:finance-route-in .22s cubic-bezier(.2,.7,.2,1) both}
 @keyframes finance-route-in{from{opacity:.72;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.finance-route-transition{animation:none}}
+
+/* Uniform typography across every finance route */
+.app-shell{font-size:14px}
+.app-shell aside nav a{font-size:14px;line-height:1.25}
+.app-header h1{font-size:clamp(27px,3vw,38px);line-height:1.1}
+.panel h2,.subscription-card h2{font-size:19px;line-height:1.25}
+.subscription-card-top em{display:block;margin-top:3px;color:#68798b;font-size:11px;font-style:normal}
