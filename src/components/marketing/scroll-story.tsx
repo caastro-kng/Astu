@@ -1,27 +1,20 @@
 import { useLayoutEffect, useRef } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { OrganizationPreview } from "./organization-preview";
+import { PhoneFrame, StaticPhoneScene } from "./phone-demo";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const scenes = [
-  { number: "01", label: "OBSERVAR", title: "Veja tudo com mais clareza.", description: "Receitas, contas e objetivos deixam de disputar sua atenção quando você consegue observar o cenário inteiro." },
-  { number: "02", label: "ORGANIZAR", title: "Reúna tudo em um só lugar.", description: "Dê um lugar para cada receita, despesa, assinatura e objetivo. Aos poucos, os números formam uma visão clara." },
-  { number: "03", label: "PLANEJAR", title: "Planeje o próximo passo.", description: "Com o dashboard organizado, sua meta ganha direção e cada decisão passa a fazer parte de um plano possível." },
+  { number: "01", label: "COMEÇAR", title: "Tudo começa com uma visão mais clara.", description: "Abra a Astú e encontre suas principais informações financeiras em poucos segundos." },
+  { number: "02", label: "ENTENDER", title: "Seu mês inteiro em uma única visão.", description: "Veja saldo, receitas, despesas e próximos vencimentos sem precisar procurar em várias telas." },
+  { number: "03", label: "ORGANIZAR", title: "Registre uma movimentação em poucos passos.", description: "Adicione uma receita ou despesa e veja seu planejamento ser atualizado." },
+  { number: "04", label: "PLANEJAR", title: "Acompanhe o caminho até seus objetivos.", description: "Defina uma meta, acompanhe o progresso e saiba quanto falta para chegar lá." },
+  { number: "05", label: "DECIDIR", title: "Organize hoje. Decida melhor amanhã.", description: "A Astú transforma registros simples em uma visão financeira mais clara." },
 ] as const;
 
-const sceneStates = {
-  observe: {
-    income: { x: -42, y: 24, scale: 0.94, opacity: 0.78 },
-    expense: { x: 48, y: -16, scale: 0.94, opacity: 0.72 },
-    bill: { x: 36, y: 22, scale: 0.95, opacity: 0.62 },
-    balance: { x: 52, y: 38, scale: 0.94, opacity: 0.48 },
-    goal: { x: 18, y: 34, scale: 0.95, opacity: 0.38 },
-  },
-  organize: { duration: 0.72, ease: "power2.inOut" },
-  plan: { duration: 0.72, ease: "power2.inOut" },
-} as const;
+const timelinePoints = { overview: 1.28, transaction: 2.35, goal: 3.58, final: 4.58 } as const;
 
 export function ScrollStory() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -31,39 +24,52 @@ export function ScrollStory() {
     const mm = gsap.matchMedia();
     mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
       const context = gsap.context(() => {
-        const text = gsap.utils.toArray<HTMLElement>("[data-story-copy]");
-        const dots = gsap.utils.toArray<HTMLElement>("[data-story-step]");
-        const query = (selector: string) =>
-          sectionRef.current!.querySelector<HTMLElement>(selector)!;
-        const card = (name: string) => query(`[data-scene-card="${name}"]`);
-        const fox = query("[data-organizer-fox]");
-        const sidebar = query("[data-organizer-sidebar]");
-        const dashboard = query("[data-organizer-window]");
-        const progress = query("[data-story-progress]");
-        const goalProgress = query("[data-goal-progress]");
+        const stage = stageRef.current!;
+        const all = <T extends Element>(selector: string) => Array.from(stage.querySelectorAll<T>(selector));
+        const one = <T extends Element>(selector: string) => stage.querySelector<T>(selector)!;
+        const copy = all<HTMLElement>("[data-story-copy]");
+        const steps = all<HTMLElement>("[data-story-step]");
+        const frame = one<HTMLElement>("[data-phone-frame]");
+        const home = one<HTMLElement>("[data-phone-home]");
+        const icon = one<HTMLElement>("[data-phone-icon]");
+        const splash = one<HTMLElement>("[data-phone-splash]");
+        const overview = one<HTMLElement>("[data-phone-overview]");
+        const overviewCards = all<HTMLElement>("[data-phone-card]");
+        const sheet = one<HTMLElement>("[data-phone-sheet]");
+        const fields = all<HTMLElement>("[data-phone-field]");
+        const goal = one<HTMLElement>("[data-phone-goal]");
+        const tap = one<HTMLElement>("[data-phone-tap]");
+        const toast = one<HTMLElement>("[data-phone-toast]");
+        const glow = one<HTMLElement>("[data-phone-glow]");
+        const progress = one<HTMLElement>("[data-story-progress]");
 
-        gsap.set(text.slice(1), { autoAlpha: 0, y: 24, filter: "blur(5px)" });
-        gsap.set(dots.slice(1), { color: "#66859c" });
+        gsap.set(copy.slice(1), { autoAlpha: 0, y: 20, filter: "blur(5px)" });
+        gsap.set(steps.slice(1), { color: "#66859c" });
         gsap.set(progress, { scaleY: 0, transformOrigin: "top center" });
-        gsap.set(dashboard, { scale: 0.97 });
-        gsap.set(sidebar, { opacity: 0.46 });
-        gsap.set(fox, { x: 0, y: 8, scale: 1.04 });
-        Object.entries(sceneStates.observe).forEach(([name, state]) => gsap.set(card(name), state));
-        gsap.set(goalProgress, { "--goal-fill": 0.3 });
+        gsap.set(frame, { autoAlpha: 0, y: 32, scale: 0.94 });
+        gsap.set([splash, overview, goal, toast], { autoAlpha: 0 });
+        gsap.set(splash, { clipPath: "circle(8% at 50% 58%)" });
+        gsap.set(overviewCards, { opacity: 0, y: 12 });
+        gsap.set(sheet, { yPercent: 110 });
+        gsap.set(fields, { opacity: 0, y: 8 });
+        gsap.set(goal, { xPercent: 100 });
+        gsap.set(tap, { opacity: 0 });
+        gsap.set(glow, { opacity: 0, scale: 0.86 });
+        gsap.set("[data-value-updated], [data-phone-new-row]", { autoAlpha: 0, y: 5 });
 
-        const swapCopy = (timeline: gsap.core.Timeline, outgoing: HTMLElement, incoming: HTMLElement, at: number) => {
-          timeline
-            .to(outgoing, { autoAlpha: 0, y: -24, filter: "blur(5px)", duration: 0.28, ease: "power2.in" }, at)
-            .to(incoming, { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.36, ease: "power3.out" }, at + 0.26);
+        const swapCopy = (tl: gsap.core.Timeline, from: number, to: number, at: number) => {
+          tl.to(copy[from], { autoAlpha: 0, y: -20, filter: "blur(5px)", duration: 0.22 }, at)
+            .to(copy[to], { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.28 }, at + 0.2)
+            .to(steps[from], { color: "#66859c", duration: 0.15 }, at)
+            .to(steps[to], { color: "#52c7b0", duration: 0.15 }, at + 0.15);
         };
 
-        const timeline = gsap.timeline({
-          defaults: { ease: "none" },
+        const tl = gsap.timeline({
           scrollTrigger: {
             trigger: sectionRef.current,
-            id: "astu-how-it-works",
+            id: "astu-phone-story",
             start: "top top+=80",
-            end: () => `+=${Math.round(window.innerHeight * (window.innerHeight < 700 ? 1.65 : 2.15))}`,
+            end: () => `+=${Math.round(window.innerHeight * (window.innerHeight < 700 ? 2.45 : 3.2))}`,
             pin: stageRef.current,
             pinSpacing: true,
             scrub: 0.8,
@@ -72,75 +78,78 @@ export function ScrollStory() {
           },
         });
 
-        timeline.addLabel("observe", 0).to(progress, { scaleY: 0.5, duration: 1 }, 0);
-        swapCopy(timeline, text[0], text[1], 0.72);
-        timeline
-          .to([card("income"), card("expense"), card("bill"), card("balance")], { x: 0, y: 0, scale: 1, opacity: 1, ...sceneStates.organize }, 0.72)
-          .to(sidebar, { opacity: 1, duration: 0.6 }, 0.78)
-          .to(fox, { x: -18, y: 0, scale: 1, duration: 0.7 }, 0.76)
-          .to(dots[0], { color: "#66859c", duration: 0.2 }, 0.82)
-          .to(dots[1], { color: "#52c7b0", duration: 0.2 }, 0.82)
-          .addLabel("organize", 1);
-        swapCopy(timeline, text[1], text[2], 1.72);
-        timeline
-          .to(card("goal"), { x: 0, y: 0, scale: 1.015, opacity: 1, ...sceneStates.plan }, 1.7)
-          .to(card("goal"), { scale: 1, duration: 0.3 }, 2.38)
-          .to(goalProgress, { "--goal-fill": 1, duration: 0.72 }, 1.76)
-          .to(fox, { x: -30, y: 4, scale: 0.96, duration: 0.72 }, 1.72)
-          .to(dashboard, { scale: 1, duration: 0.72 }, 1.72)
-          .to(dots[1], { color: "#66859c", duration: 0.2 }, 1.82)
-          .to(dots[2], { color: "#52c7b0", duration: 0.2 }, 1.82)
-          .to(progress, { scaleY: 1, duration: 1 }, 1)
-          .addLabel("plan", 2)
-          .to({}, { duration: 0.6 });
+        tl.addLabel("home", 0)
+          .to(frame, { autoAlpha: 1, y: 0, scale: 1, duration: 0.38, ease: "power3.out" }, 0)
+          .to(tap, { opacity: 1, x: 14, y: -10, duration: 0.25 }, 0.32)
+          .to(icon, { scale: 0.9, duration: 0.12, yoyo: true, repeat: 1 }, 0.58)
+          .to("[data-phone-tap] i", { scale: 1.8, opacity: 0, duration: 0.22 }, 0.58)
+          .to(icon, { scale: 4.8, opacity: 0, duration: 0.45, ease: "power2.in" }, 0.78)
+          .to(home, { autoAlpha: 0, duration: 0.2 }, 0.88)
+          .to(splash, { autoAlpha: 1, clipPath: "circle(75% at 50% 50%)", duration: 0.52 }, 0.78)
+          .to(tap, { opacity: 0, duration: 0.12 }, 0.72)
+          .addLabel("overview", timelinePoints.overview);
+        swapCopy(tl, 0, 1, timelinePoints.overview);
+        tl.to(splash, { autoAlpha: 0, scale: 1.06, duration: 0.34 }, 1.34)
+          .to(overview, { autoAlpha: 1, duration: 0.32 }, 1.4)
+          .to(overviewCards, { opacity: 1, y: 0, duration: 0.3, stagger: 0.06 }, 1.48)
+          .fromTo("[data-phone-chart] i", { scaleY: 0 }, { scaleY: 1, duration: 0.38, stagger: 0.035, transformOrigin: "bottom" }, 1.58)
+          .to(tap, { opacity: 1, x: 104, y: 216, duration: 0.32 }, 2.04)
+          .addLabel("transaction", timelinePoints.transaction);
+        swapCopy(tl, 1, 2, timelinePoints.transaction);
+        tl.to("[data-phone-add]", { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 }, 2.34)
+          .to(sheet, { yPercent: 0, duration: 0.46, ease: "power3.out" }, 2.48)
+          .to(fields, { opacity: 1, y: 0, duration: 0.22, stagger: 0.08 }, 2.72)
+          .to(tap, { x: 18, y: 286, duration: 0.3 }, 3.02)
+          .to("[data-phone-save]", { scale: 0.97, duration: 0.1, yoyo: true, repeat: 1 }, 3.24)
+          .to(sheet, { yPercent: 110, duration: 0.38, ease: "power2.in" }, 3.36)
+          .to(toast, { autoAlpha: 1, y: -8, duration: 0.24 }, 3.42)
+          .to("[data-value-initial]", { autoAlpha: 0, y: -5, duration: 0.18 }, 3.43)
+          .to("[data-value-updated]", { autoAlpha: 1, y: 0, duration: 0.22 }, 3.5)
+          .to("[data-phone-new-row]", { autoAlpha: 1, y: 0, duration: 0.24 }, 3.5)
+          .to("[data-phone-chart-bar=last]", { scaleY: 1.2, backgroundColor: "#c9430a", duration: 0.3 }, 3.48)
+          .to(toast, { autoAlpha: 0, y: 0, duration: 0.22 }, 3.82)
+          .to(tap, { opacity: 0, duration: 0.12 }, 3.42)
+          .addLabel("goal", timelinePoints.goal);
+        swapCopy(tl, 2, 3, timelinePoints.goal);
+        tl.to(overview, { xPercent: -100, autoAlpha: 0, duration: 0.45 }, 3.62)
+          .to(goal, { xPercent: 0, autoAlpha: 1, duration: 0.45 }, 3.62)
+          .fromTo("[data-phone-goal-progress]", { "--phone-goal": 0.15 }, { "--phone-goal": 1, duration: 0.5 }, 3.82)
+          .addLabel("final", timelinePoints.final);
+        swapCopy(tl, 3, 4, timelinePoints.final);
+        tl.to(goal, { xPercent: 100, autoAlpha: 0, duration: 0.42 }, 4.62)
+          .to(overview, { xPercent: 0, autoAlpha: 1, duration: 0.42 }, 4.62)
+          .to(glow, { opacity: 1, scale: 1, duration: 0.42 }, 4.72)
+          .to(progress, { scaleY: 1, duration: 5.1 }, 0)
+          .to({}, { duration: 0.55 });
       }, sectionRef);
-
       return () => context.revert();
     });
 
     let cancelled = false;
-    const refreshAndAlignAnchor = () => {
-      requestAnimationFrame(() => {
-        if (cancelled) return;
-        ScrollTrigger.refresh();
-        if (window.location.hash !== "#como-funciona") return;
-        const storyTrigger = ScrollTrigger.getById("astu-how-it-works");
-        window.scrollTo({
-          top: storyTrigger
-            ? storyTrigger.start
-            : Math.max(0, sectionRef.current!.offsetTop - 80),
-        });
-      });
-    };
-    if (document.fonts.status === "loaded") refreshAndAlignAnchor();
-    else void document.fonts.ready.then(refreshAndAlignAnchor);
-
-    return () => {
-      cancelled = true;
-      mm.revert();
-    };
+    const refresh = () => requestAnimationFrame(() => {
+      if (cancelled) return;
+      ScrollTrigger.refresh();
+      if (window.location.hash !== "#como-funciona") return;
+      const trigger = ScrollTrigger.getById("astu-phone-story");
+      window.scrollTo({ top: trigger ? trigger.start : Math.max(0, sectionRef.current!.offsetTop - 80) });
+    });
+    if (document.fonts.status === "loaded") refresh();
+    else void document.fonts.ready.then(refresh);
+    return () => { cancelled = true; mm.revert(); };
   }, []);
 
   return (
-    <section className="mk-organize-section" id="como-funciona" ref={sectionRef} aria-label="Como a Astú organiza suas finanças">
-      <ol className="mk-story-accessible">
-        {scenes.map((scene) => <li key={scene.number}><h2>{scene.title}</h2><p>{scene.description}</p></li>)}
-      </ol>
-      <div className="mk-story-stage" ref={stageRef}>
-        <div className="mk-story-copy-stack" aria-hidden="true">
-          {scenes.map((scene) => (
-            <div data-story-copy key={scene.number}>
-              <p className="mk-kicker">{scene.number} / {scene.label}</p>
-              <h2>{scene.title}</h2>
-              <p>{scene.description}</p>
-            </div>
-          ))}
-          <div className="mk-story-indicator">
-            <span className="mk-story-track"><i data-story-progress /></span>
-            {scenes.map((scene) => <b data-story-step key={scene.number}>{scene.number}</b>)}
-          </div>
+    <section className="mk-phone-story" id="como-funciona" ref={sectionRef} aria-label="Como funciona a Astú">
+      <div className="mk-phone-story-desktop" ref={stageRef}>
+        <div className="mk-story-copy-stack">
+          {scenes.map((scene, index) => <div data-story-copy key={scene.number}><p className="mk-kicker">{scene.number} / {scene.label}</p><h2>{scene.title}</h2><p>{scene.description}</p>{index === 4 ? <a href="/app" className="mk-button">Experimentar a Astú <ArrowUpRight size={17} /></a> : null}</div>)}
+          <div className="mk-story-indicator"><span className="mk-story-track"><i data-story-progress /></span>{scenes.map((scene) => <b data-story-step key={scene.number}>{scene.number}</b>)}</div>
         </div>
-        <OrganizationPreview />
+        <PhoneFrame />
+      </div>
+      <div className="mk-phone-story-mobile">
+        {[{ scene: scenes[1], type: "overview" as const }, { scene: scenes[2], type: "transaction" as const }, { scene: scenes[3], type: "goal" as const }].map(({ scene, type }) => <article key={scene.number}><div><p className="mk-kicker">{scene.number} / {scene.label}</p><h2>{scene.title}</h2><p>{scene.description}</p></div><StaticPhoneScene type={type} /></article>)}
+        <a href="/app" className="mk-button">Experimentar a Astú <ArrowUpRight size={17} /></a>
       </div>
     </section>
   );

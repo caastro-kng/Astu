@@ -48,3 +48,18 @@ export const demo = {
   history: [180000, 220000, 198000, 265000, 294000],
 };
 export const demoBalance = demo.income - demo.expenses;
+
+export const phoneDemoData = {
+  initialBalance: 294000,
+  initialExpenses: 186000,
+  demonstrationExpense: 8590,
+  expenseDescription: "Mercado",
+  expenseCategory: "Alimentação",
+  nextBill: { name: "Internet de casa", date: "18 set", amount: 9900 },
+  goal: demo.goal,
+} as const;
+
+export const phoneDemoUpdatedBalance =
+  phoneDemoData.initialBalance - phoneDemoData.demonstrationExpense;
+export const phoneDemoUpdatedExpenses =
+  phoneDemoData.initialExpenses + phoneDemoData.demonstrationExpense;
