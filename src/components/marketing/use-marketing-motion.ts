@@ -5,7 +5,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 const motionQuery = "(prefers-reduced-motion: no-preference)";
 
-/** Entrance is independent from scroll; resizing never replays completed reveals. */
 export function useMarketingMotion(root: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const mm = gsap.matchMedia();
@@ -15,48 +14,120 @@ export function useMarketingMotion(root: RefObject<HTMLDivElement | null>) {
         const duration = desktop ? 0.65 : 0.4;
         if (window.scrollY < 80) {
           const entrance = gsap.timeline({
-            defaults: {
-              ease: "power2.out",
-              duration,
-              clearProps: "transform,opacity",
-            },
+            paused: true,
+            defaults: { ease: "power3.out" },
+            onComplete: () =>
+              root.current?.classList.add("mk-entrance-complete"),
           });
           entrance
-            .from(".mk-header", { opacity: 0, y: -16 }, 0)
-            .from(".mk-hero .mk-kicker", { opacity: 0, y: 16 }, 0.06)
             .from(
-              "[data-title-block]",
-              { y: 26, opacity: 0, stagger: 0.08 },
+              ".mk-header .mk-brand",
+              { opacity: 0, y: -12, duration: 0.6 },
               0.1,
             )
-            .from(".mk-hero .mk-lead", { opacity: 0, y: 16 }, 0.2)
             .from(
-              ".mk-actions, .mk-note",
-              { opacity: 0, y: 16, stagger: 0.07 },
-              0.27,
+              ".mk-header nav a",
+              { opacity: 0, y: -12, duration: 0.55, stagger: 0.055 },
+              0.2,
             )
-            .from(".mk-fox", { opacity: 0, scale: 0.96 }, 0.13)
-            .from(".mk-floating", { opacity: 0, y: 20, stagger: 0.08 }, 0.32);
+            .from(
+              ".mk-header > .mk-button, .mk-menu",
+              { opacity: 0, y: -12, duration: 0.55 },
+              0.36,
+            )
+            .fromTo(
+              ".mk-header",
+              { "--header-line": 0 },
+              { "--header-line": 1, duration: 0.75 },
+              0.18,
+            )
+            .from(
+              ".mk-hero .mk-kicker",
+              { opacity: 0, y: 14, duration: 0.55 },
+              0.3,
+            )
+            .from(
+              ".mk-hero .mk-kicker > span",
+              { scale: 0, duration: 0.38 },
+              0.38,
+            )
+            .from(
+              "[data-title-block]",
+              {
+                yPercent: 110,
+                opacity: 0,
+                filter: "blur(6px)",
+                duration: 0.84,
+                stagger: 0.12,
+              },
+              0.38,
+            )
+            .from(
+              ".mk-orbit",
+              { opacity: 0, scale: 0.88, duration: 0.82 },
+              0.62,
+            )
+            .from(
+              ".mk-visual-caption",
+              { opacity: 0, y: 10, duration: 0.55 },
+              0.64,
+            )
+            .from(
+              ".mk-hero .mk-lead",
+              { opacity: 0, y: 18, duration: 0.62 },
+              0.72,
+            )
+            .from(
+              ".mk-fox",
+              { opacity: 0, scale: 0.9, y: 28, duration: 0.92 },
+              0.76,
+            )
+            .from(
+              ".mk-actions > *",
+              { opacity: 0, y: 18, duration: 0.62, stagger: 0.08 },
+              0.9,
+            )
+            .from(
+              ".mk-float-income",
+              { opacity: 0, x: 28, y: -10, scale: 0.96, duration: 0.72 },
+              1,
+            )
+            .from(
+              ".mk-float-balance",
+              { opacity: 0, x: -28, y: 8, scale: 0.96, duration: 0.72 },
+              1.1,
+            )
+            .from(
+              ".mk-float-goal",
+              { opacity: 0, x: 24, y: 24, scale: 0.96, duration: 0.72 },
+              1.2,
+            )
+            .from(
+              ".mk-note, .mk-demo-label",
+              { opacity: 0, y: 12, duration: 0.55, stagger: 0.08 },
+              1.3,
+            )
+            .from(
+              ".mk-continue",
+              { opacity: 0, clipPath: "inset(0 50% 0 50%)", duration: 0.65 },
+              1.45,
+            )
+            .from(
+              ".mk-continue svg",
+              { y: -4, duration: 0.32, yoyo: true, repeat: 1 },
+              1.68,
+            )
+            .set("[data-title-block]", { clearProps: "filter" }, 2.04);
+
+          // Waiting one task prevents React Strict Mode's development probe from
+          // briefly playing the discarded timeline before its cleanup runs.
+          gsap.delayedCall(0, () => entrance.play());
         }
-        // Native scroll; only the secondary backdrop moves, not the title.
-        if (desktop)
-          gsap.to(".mk-orbit", {
-            y: 32,
-            scale: 1.04,
-            ease: "none",
-            scrollTrigger: {
-              trigger: ".mk-hero",
-              start: "top top",
-              end: "bottom top",
-              scrub: 0.35,
-            },
-          });
 
         const reveal = (
           trigger: Element,
           build: (tl: gsap.core.Timeline) => void,
         ) => {
-          // A restored scroll position must not hide content above the viewport.
           if (trigger.getBoundingClientRect().bottom < 0) return;
           const tl = gsap.timeline({
             defaults: { duration, ease: "power2.out" },
@@ -78,8 +149,11 @@ export function useMarketingMotion(root: RefObject<HTMLDivElement | null>) {
           .toArray<HTMLElement>(".mk-feature-section")
           .forEach((section) => {
             reveal(section, (tl) => {
-              const copy = section.firstElementChild;
-              tl.from(copy, { opacity: 0, y: 16, clearProps: "all" }, 0);
+              tl.from(
+                section.firstElementChild,
+                { opacity: 0, y: 16, clearProps: "all" },
+                0,
+              );
               if (section.id === "movimentos")
                 tl.from(
                   section.querySelectorAll(".mk-list-preview>div"),
@@ -159,6 +233,43 @@ export function useMarketingMotion(root: RefObject<HTMLDivElement | null>) {
       }, root);
       return () => ctx.revert();
     });
-    return () => mm.revert();
+    mm.add(
+      "(min-width: 901px) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const visual =
+          root.current?.querySelector<HTMLElement>(".mk-fox-visual");
+        const hero = root.current?.querySelector<HTMLElement>(".mk-hero");
+        if (!visual || !hero) return;
+        const moveX = gsap.quickTo(visual, "x", {
+          duration: 0.55,
+          ease: "power3.out",
+        });
+        const moveY = gsap.quickTo(visual, "y", {
+          duration: 0.55,
+          ease: "power3.out",
+        });
+        const onMove = (event: PointerEvent) => {
+          if (!root.current?.classList.contains("mk-entrance-complete")) return;
+          const box = hero.getBoundingClientRect();
+          moveX(((event.clientX - box.left) / box.width - 0.5) * 16);
+          moveY(((event.clientY - box.top) / box.height - 0.5) * 12);
+        };
+        const reset = () => {
+          moveX(0);
+          moveY(0);
+        };
+        hero.addEventListener("pointermove", onMove, { passive: true });
+        hero.addEventListener("pointerleave", reset);
+        return () => {
+          hero.removeEventListener("pointermove", onMove);
+          hero.removeEventListener("pointerleave", reset);
+          gsap.set(visual, { clearProps: "transform" });
+        };
+      },
+    );
+    return () => {
+      root.current?.classList.remove("mk-entrance-complete");
+      mm.revert();
+    };
   }, [root]);
 }

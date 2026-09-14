@@ -1,127 +1,87 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { createNarrative } from "./narrative-motion";
-import { demo, demoBalance } from "../../data/mock-finance";
-import { formatCurrency } from "../../features/finance/utils";
-import { ProductPreview } from "./product-preview";
+import { OrganizationPreview } from "./organization-preview";
 gsap.registerPlugin(ScrollTrigger);
-const scenes = [
-  [
-    "Observar",
-    "Suas finanças estão espalhadas demais?",
-    "Contas em um lugar. Metas em outro. Comece reconhecendo o que precisa da sua atenção.",
-  ],
-  [
-    "Organizar",
-    "Reúna tudo em um só lugar.",
-    "Dê um lugar para cada receita, despesa, assinatura e objetivo.",
-  ],
-  [
-    "Entender",
-    "Enxergue o que os números estão dizendo.",
-    "Uma visão do mês conecta o dinheiro que entra às escolhas que você faz.",
-  ],
-  [
-    "Planejar",
-    "Transforme planos em metas possíveis.",
-    "Valor, prazo e aporte: uma intenção se transforma em um próximo passo.",
-  ],
-  [
-    "Decidir",
-    "Mais clareza para decidir o próximo passo.",
-    "Sua organização financeira começa com um registro. A Astú acompanha o resto.",
-  ],
-];
+
 export function ScrollStory() {
   const root = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const mm = gsap.matchMedia();
-    mm.add(
-      "(min-width: 901px) and (prefers-reduced-motion: no-preference)",
-      () => {
-        root.current?.classList.add("mk-motion-enabled");
-        const ctx = gsap.context(() => {
-          if (root.current) createNarrative(root.current);
-        }, root);
-        return () => {
-          ctx.revert();
-          root.current?.classList.remove("mk-motion-enabled");
-        };
-      },
-    );
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const ctx = gsap.context(() => {
+        const desktop = window.matchMedia("(min-width: 901px)").matches;
+        const tl = gsap.timeline({
+          defaults: { ease: "power3.out" },
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top 75%",
+            once: true,
+          },
+        });
+        tl.from("[data-organizer-copy]", {
+          opacity: 0,
+          x: desktop ? -28 : 0,
+          y: desktop ? 0 : 18,
+          duration: 0.7,
+          clearProps: "all",
+        })
+          .from(
+            "[data-organizer-window]",
+            {
+              opacity: 0,
+              scale: 0.965,
+              y: 20,
+              duration: 0.8,
+              clearProps: "all",
+            },
+            0.08,
+          )
+          .from(
+            "[data-organizer-sidebar]",
+            { opacity: 0, x: -16, duration: 0.55, clearProps: "all" },
+            0.22,
+          )
+          .from(
+            "[data-organizer-fox]",
+            {
+              opacity: 0,
+              scale: 0.94,
+              y: 16,
+              duration: 0.7,
+              clearProps: "all",
+            },
+            0.3,
+          )
+          .from(
+            "[data-organizer-card]",
+            {
+              opacity: 0,
+              y: 16,
+              scale: 0.98,
+              duration: 0.55,
+              stagger: 0.075,
+              clearProps: "all",
+            },
+            0.42,
+          );
+      }, root);
+      return () => ctx.revert();
+    });
     return () => mm.revert();
   }, []);
   return (
-    <section className="mk-story" id="como-funciona" ref={root}>
-      <div className="mk-story-pin">
-        <div className="mk-story-light" aria-hidden="true" />
-        <div className="mk-story-track" aria-hidden="true">
-          {scenes.map(([name]) => (
-            <span key={name}>
-              <i />
-            </span>
-          ))}
-        </div>
-        <div className="mk-story-heading">
-          <span className="mk-kicker">DO PRIMEIRO OLHAR AO PRÓXIMO PASSO</span>
-          <div className="mk-story-copies">
-            {scenes.map(([label, title, body], i) => (
-              <article data-story-copy key={label}>
-                <span className="mk-step">
-                  0{i + 1} / {label}
-                </span>
-                <h2>{title}</h2>
-                <p>{body}</p>
-                {i === 4 && (
-                  <a href="/app" className="mk-button">
-                    Acessar minha organização financeira ↗
-                  </a>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-        <div className="mk-story-visual">
-          <img
-            data-story-fox
-            src="/brand/astu/astu-mascot.png"
-            width="1254"
-            height="1254"
-            alt="Raposa Astú observando e organizando as finanças"
-            loading="lazy"
-          />
-          <div className="mk-story-tokens">
-            {["Receitas", "Despesas", "Assinaturas", "Contas", "Metas"].map(
-              (label, i) => (
-                <div
-                  data-story-token
-                  style={{
-                    transform: `translate(${(i % 2 ? 1 : -1) * 45}px, ${i * 9}px) rotate(${i % 2 ? 7 : -7}deg)`,
-                  }}
-                  key={label}
-                >
-                  {label}
-                  <strong>
-                    {
-                      [
-                        formatCurrency(demo.income),
-                        formatCurrency(demo.expenses),
-                        formatCurrency(demo.subscriptions[0].amount),
-                        formatCurrency(demoBalance),
-                        formatCurrency(demo.goal.current),
-                      ][i]
-                    }
-                  </strong>
-                </div>
-              ),
-            )}
-          </div>
-          <div data-story-product>
-            <ProductPreview compact />
-          </div>
-        </div>
+    <section className="mk-organize-section" id="como-funciona" ref={root}>
+      <div className="mk-organize-copy" data-organizer-copy>
+        <p className="mk-kicker">02 / ORGANIZAR</p>
+        <h2>Reúna tudo em um só lugar.</h2>
+        <p>
+          Dê um lugar para cada receita, despesa, assinatura e objetivo. Aos
+          poucos, os números deixam de competir pela sua atenção e formam uma
+          visão clara.
+        </p>
       </div>
+      <OrganizationPreview />
     </section>
   );
 }
