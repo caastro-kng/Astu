@@ -5,41 +5,93 @@ function Form({close,save}:{close:()=>void;save:(t:TransactionType,d:string,a:nu
 function Overview({data,add}:{data:FinanceData;add:()=>void}){if(!data.transactions.length)return <Empty title="Vamos organizar sua vida financeira?" text="Adicione sua primeira receita ou despesa para começar a acompanhar seu dinheiro." add={add}/>;return <><Metrics data={data}/><section className="content-grid"><article className="panel"><h2>Movimentos recentes</h2>{data.transactions.slice(-5).reverse().map(x=><div className="row" key={x.id}><span>{x.categoryId[0]}</span><b>{x.description}<small>{x.categoryId} · {x.date}</small></b><strong className={x.type}>{x.type==='income'?'+ ':'- '}{formatCurrency(x.amount)}</strong></div>)}</article><article className="insight"><p>Dica da Astú</p><h2>Registre cada movimento para decidir com clareza.</h2><span>Suas metas ajudam a transformar planos em próximos passos.</span></article></section></>}
 function Movements({data,setData,add}:{data:FinanceData;setData:(x:FinanceData)=>void;add:()=>void}){const[filter,setFilter]=useState("all"),list=data.transactions.filter(x=>filter==='all'||x.type===filter);return <><div className="page-actions"><div className="filters">{[["all","Todos"],["income","Receitas"],["expense","Despesas"]].map(([v,l])=><button key={v} className={filter===v?'active':''} onClick={()=>setFilter(v)}>{l}</button>)}</div><button className="primary" onClick={add}><Plus size={17}/>Novo movimento</button></div>{!list.length?<Empty title="Você ainda não registrou nenhum movimento." text="Ao adicionar receitas e despesas, a Astú montará seus resumos automaticamente." add={add}/>:<article className="panel table-panel"><div className="table-head"><span>Descrição</span><span>Categoria</span><span>Data</span><span>Valor</span><span>Ações</span></div>{list.map(x=><div className="table-row" key={x.id}><b>{x.description}</b><span>{x.categoryId}</span><span>{x.date}</span><strong className={x.type}>{x.type==='income'?'+ ':'- '}{formatCurrency(x.amount)}</strong><button onClick={()=>{if(confirm('Excluir este movimento?'))setData({...data,transactions:data.transactions.filter(y=>y.id!==x.id)})}}>Excluir</button></div>)}</article>}</>}
 const subscriptionCatalog=[
-  {name:"Outro serviço",plans:[]},
-  {name:"Netflix",plans:[
+  {group:"Outros",name:"Outro serviço",plans:[]},
+  {group:"Streaming de vídeo",name:"Netflix",plans:[
     {name:"Padrão com anúncios",price:"20,90",frequency:"monthly" as const},
     {name:"Padrão",price:"44,90",frequency:"monthly" as const},
     {name:"Premium",price:"59,90",frequency:"monthly" as const},
   ]},
-  {name:"Disney+",plans:[
+  {group:"Streaming de vídeo",name:"Disney+",plans:[
     {name:"Padrão com anúncios",price:"29,90",frequency:"monthly" as const},
     {name:"Padrão",price:"49,90",frequency:"monthly" as const},
     {name:"Premium",price:"69,90",frequency:"monthly" as const},
     {name:"Padrão anual",price:"407,90",frequency:"yearly" as const},
     {name:"Premium anual",price:"587,90",frequency:"yearly" as const},
   ]},
-  {name:"Spotify",plans:[
-    {name:"Universitário",price:"12,90",frequency:"monthly" as const},
-    {name:"Individual",price:"23,90",frequency:"monthly" as const},
-    {name:"Duo",price:"31,90",frequency:"monthly" as const},
-    {name:"Família",price:"40,90",frequency:"monthly" as const},
-  ]},
-  {name:"Amazon Prime",plans:[
+  {group:"Streaming de vídeo",name:"Amazon Prime",plans:[
     {name:"Mensal",price:"19,90",frequency:"monthly" as const},
     {name:"Anual",price:"166,80",frequency:"yearly" as const},
   ]},
-  {name:"Max",plans:[
+  {group:"Streaming de vídeo",name:"Max",plans:[
     {name:"Básico com anúncios",price:"29,90",frequency:"monthly" as const},
     {name:"Standard",price:"44,90",frequency:"monthly" as const},
     {name:"Platinum",price:"55,90",frequency:"monthly" as const},
     {name:"Básico anual",price:"274,80",frequency:"yearly" as const},
   ]},
-  {name:"Apple Music",plans:[
+  {group:"Streaming de vídeo",name:"Apple TV+",plans:[
+    {name:"Mensal",price:"34,90",frequency:"monthly" as const},
+  ]},
+  {group:"Streaming de vídeo",name:"Globoplay",plans:[
+    {name:"Padrão com anúncios",price:"22,90",frequency:"monthly" as const},
+    {name:"Padrão",price:"32,90",frequency:"monthly" as const},
+    {name:"Premium",price:"54,90",frequency:"monthly" as const},
+  ]},
+  {group:"Streaming de vídeo",name:"Paramount+",plans:[
+    {name:"Básico",price:"18,90",frequency:"monthly" as const},
+    {name:"Padrão",price:"27,90",frequency:"monthly" as const},
+    {name:"Premium",price:"34,90",frequency:"monthly" as const},
+  ]},
+  {group:"Streaming de vídeo",name:"Crunchyroll",plans:[
+    {name:"Fan",price:"14,99",frequency:"monthly" as const},
+    {name:"Mega Fan",price:"19,99",frequency:"monthly" as const},
+    {name:"Mega Fan anual",price:"199,99",frequency:"yearly" as const},
+  ]},
+  {group:"Música",name:"Spotify",plans:[
+    {name:"Universitário",price:"12,90",frequency:"monthly" as const},
+    {name:"Individual",price:"23,90",frequency:"monthly" as const},
+    {name:"Duo",price:"31,90",frequency:"monthly" as const},
+    {name:"Família",price:"40,90",frequency:"monthly" as const},
+  ]},
+  {group:"Música",name:"Apple Music",plans:[
     {name:"Universitário",price:"11,90",frequency:"monthly" as const},
     {name:"Individual",price:"23,90",frequency:"monthly" as const},
     {name:"Família",price:"40,90",frequency:"monthly" as const},
   ]},
+  {group:"Música",name:"YouTube Music",plans:[
+    {name:"Individual",price:"21,90",frequency:"monthly" as const},
+    {name:"Família",price:"34,90",frequency:"monthly" as const},
+  ]},
+  {group:"Música",name:"Deezer",plans:[
+    {name:"Premium",price:"24,90",frequency:"monthly" as const},
+    {name:"Duo",price:"32,90",frequency:"monthly" as const},
+    {name:"Família",price:"39,90",frequency:"monthly" as const},
+  ]},
+  {group:"Música",name:"Amazon Music Unlimited",plans:[
+    {name:"Individual",price:"21,90",frequency:"monthly" as const},
+    {name:"Família",price:"34,90",frequency:"monthly" as const},
+  ]},
+  {group:"Inteligência artificial",name:"ChatGPT",plans:[
+    {name:"Go",price:"39,90",frequency:"monthly" as const},
+    {name:"Plus",price:"99,90",frequency:"monthly" as const},
+    {name:"Pro",price:"999,90",frequency:"monthly" as const},
+  ]},
+  {group:"Inteligência artificial",name:"Google Gemini",plans:[
+    {name:"Google AI Plus",price:"24,90",frequency:"monthly" as const},
+    {name:"Google AI Pro",price:"99,90",frequency:"monthly" as const},
+    {name:"Google AI Ultra",price:"499,90",frequency:"monthly" as const},
+  ]},
+  {group:"Inteligência artificial",name:"Claude",plans:[
+    {name:"Pro",price:"109,90",frequency:"monthly" as const},
+    {name:"Max 5x",price:"549,90",frequency:"monthly" as const},
+    {name:"Max 20x",price:"1.099,90",frequency:"monthly" as const},
+  ]},
+  {group:"Inteligência artificial",name:"Microsoft Copilot",plans:[
+    {name:"Microsoft 365 Personal",price:"51,00",frequency:"monthly" as const},
+    {name:"Microsoft 365 Family",price:"60,00",frequency:"monthly" as const},
+    {name:"Microsoft 365 Premium",price:"109,00",frequency:"monthly" as const},
+  ]},
 ];
+const subscriptionGroups=["Streaming de vídeo","Música","Inteligência artificial"] as const;
 
 function Subscriptions({data,setData}:{data:FinanceData;setData:(x:FinanceData)=>void}) {
   const [open,setOpen]=useState(false);
@@ -102,7 +154,7 @@ function Subscriptions({data,setData}:{data:FinanceData;setData:(x:FinanceData)=
         <span className="modal-eyebrow">Assinaturas</span>
         <h2>Adicionar assinatura</h2>
         <p className="modal-description">Escolha o serviço e o plano. A Astú preenche o preço automaticamente, mas você pode ajustá-lo.</p>
-        <label>Serviço<select value={service} onChange={e=>chooseService(e.target.value)}>{subscriptionCatalog.map(item=><option key={item.name}>{item.name}</option>)}</select></label>
+        <label>Serviço<select value={service} onChange={e=>chooseService(e.target.value)}><option>Outro serviço</option>{subscriptionGroups.map(group=><optgroup key={group} label={group}>{subscriptionCatalog.filter(item=>item.group===group).map(item=><option key={item.name}>{item.name}</option>)}</optgroup>)}</select></label>
         {selectedService.plans.length>0&&<label>Plano<select value={plan} onChange={e=>applyPlan(service,e.target.value)}>{selectedService.plans.map(item=><option key={item.name}>{item.name}</option>)}</select></label>}
         <label>Nome da assinatura<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Ex.: academia, jornal, aplicativo"/></label>
         <div className="subscription-form-row">
